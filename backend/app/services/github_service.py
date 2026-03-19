@@ -143,7 +143,24 @@ class GithubService:
             raise GithubAuthError(
                 f"GitHub access forbidden{f' ({context})' if context else ''}. "
                 "Check token scopes (needs read:user and public_repo)."
-            )                 
+            )   
+        # 429: explicit too many requests
+        if r.status_code == 429:
+            retry_after = int(r.headers.get("Retry-After", 60))
+            raise GithubSecondaryRateLimitError(retry_after=retry_after)
+        
+        # 500: Github server errors - don't treat as rate limit
+        if r.status_code >= 500:
+            raise RuntimeError(
+                f"github server error {r.status_code}{f' ({context})' if context else ''}."
+                "Try again in a few minutes."
+            )     
+            
+        #Log remaining on every successful response
+        remaining - r.headers.get("X-RateLimit-Remaining")
+        if remaining:
+            logger.debug(f"github rate limit remaining: {remaining}")
+                           
     async def _fetch_profile(self, client: httpx.AsyncClient, username: str) -> GithubProfile:
         r = await client.get(f"{BASE_URL}/users/{username}")
         self._check_rate_limit(r)
