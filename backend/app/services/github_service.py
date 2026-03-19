@@ -163,8 +163,7 @@ class GithubService:
                            
     async def _fetch_profile(self, client: httpx.AsyncClient, username: str) -> GithubProfile:
         r = await client.get(f"{BASE_URL}/users/{username}")
-        self._check_rate_limit(r)
-        r.raise_for_status()
+        self._validate_response(r, context=f"profile: {username}")
         d = r.json()
         return GithubProfile(
             login=d["login"], name=d.get("name"), bio=d.get("bio"),
@@ -181,8 +180,7 @@ class GithubService:
             f"{BASE_URL}/users/{username}/repos",
             params={"per_page": 100, "sort": "updated", "type": "owner"},
         )
-        self._check_rate_limit(r)
-        r.raise_for_status()
+        self._validate_response(r, context=f"repos: {username}")
         return [
             Repository(
                 name=repo["name"], description=repo.get("description"),
@@ -214,8 +212,8 @@ class GithubService:
                 elif r.status_code == 202:
                     # Github is still computing - wait and retry
                     await asyncio.sleep(2)   
-                    continue
                 else:
+                    self._validate_response(r, context=f"commits:{repo.name}")
                     break 
             except Exception:
                 pass
