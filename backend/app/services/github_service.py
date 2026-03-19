@@ -230,7 +230,3 @@ class GithubService:
                 for k, v in sorted(counts.items(), key=lambda x: -x[1])[:8]}      # Take top 8 language only
         
         
-    @staticmethod
-    def _check_rate_limit(r: httpx.Response) -> None:
-        if r.status_code in (403, 429):
-            raise RuntimeError("Github API rate limit reached. Please retry later.")    
