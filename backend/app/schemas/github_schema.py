@@ -23,6 +23,7 @@ class RepositorySchema(BaseModel):
     forks_count: int
     html_url: str
     topics: List[str]
+    created_at: datetime
     
 class GithubActivitySchema(BaseModel):
     profile: GithubProfileSchema

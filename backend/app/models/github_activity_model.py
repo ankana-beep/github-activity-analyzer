@@ -27,6 +27,7 @@ class Repository(BaseModel):
     topics: List[str] = []
     html_url: str = ""
     is_fork: bool = False
+    created_at: datetime = Field(default_factory=datetime.utcnow)
     
 class DeveloperActivity(BaseModel):
     profile: GithubProfile
