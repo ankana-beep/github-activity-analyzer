@@ -21,7 +21,8 @@ class ResumeParserService:
         
     async def parse(self, file_bytes: bytes, filename: str) -> ParsedResume:
         logger.info(f"Parsing: {filename}")
-        pass
+        text = self._extract_text(file_bytes, filename)
+        return await self._ai_extract(text)
     
     
     # Text extraction
