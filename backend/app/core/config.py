@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     
     MAX_FILE_SIZE_MB: int = 10
     
+    REPORT_OUTPUT_DIR:str = "/tmp/reports"
+    
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
