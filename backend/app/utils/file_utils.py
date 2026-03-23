@@ -22,3 +22,7 @@ def validate_resume_file(file: UploadFile, max_size_mb: int = 10) -> None:
         )
         
         
+def check_file_size(content: bytes, max_size_mb: int = 10) -> None:
+    if len(content) > max_size_mb * 1024 * 1024:
+        raise HTTPException(413, f"File exceeds {max_size_mb} MB limit.")
+        
