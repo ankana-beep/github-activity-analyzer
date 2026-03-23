@@ -3,8 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.dependencies import (
     get_job_repo, get_candidate_repo,
-    get_github_service, get_compatibility_service,
-    get_activity_analyzer,
+    get_compatibility_service,
 )
 from app.repositories.job_repository import JobRepository
 from app.repositories.candidate_repository import CandidateRepository
@@ -51,9 +50,7 @@ async def compute_compatibility(
     payload: CompatibilityRequest,
     candidate_repo: CandidateRepository = Depends(get_candidate_repo),
     job_repo: JobRepository = Depends(get_job_repo), 
-    github_service: GithubService = Depends(get_github_service),
     compatibility_service: CompatibilityService = Depends(get_compatibility_service),
-    analyzer: ActivityAnalyzerService = Depends(get_activity_analyzer),
 ):
     """
     Compute compatibility score between a candidate and a job.
