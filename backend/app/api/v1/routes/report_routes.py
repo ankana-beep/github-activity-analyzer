@@ -15,7 +15,7 @@ from app.services.pdf_report_service import PdfReportService
 from app.models.report_model import Report
 
 logger = logging.getLogger(__name__)
-router = APIRouter(PREFIX="/reports", tags=["Reports"])
+router = APIRouter(prefix="/reports", tags=["Reports"])
 
 @router.get("/")
 async def list_candidates(

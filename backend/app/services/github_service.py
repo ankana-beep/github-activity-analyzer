@@ -105,7 +105,7 @@ class GithubService:
                 
                 
     @staticmethod
-    def _validate_response(r: httpx.response, context: str = "") -> None:
+    def _validate_response(r: httpx.Response, context: str = "") -> None:
         """
         Inspects every response for rate limit, auth, and not-found conditions.
         Raises sepecific typed expectations so calers can handle each case.
@@ -157,7 +157,7 @@ class GithubService:
             )     
             
         #Log remaining on every successful response
-        remaining - r.headers.get("X-RateLimit-Remaining")
+        remaining = r.headers.get("X-RateLimit-Remaining")
         if remaining:
             logger.debug(f"github rate limit remaining: {remaining}")
                            

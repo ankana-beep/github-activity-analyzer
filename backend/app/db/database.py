@@ -1,4 +1,4 @@
-from motor.motor_asyncio import AsyncIOMotorClient, AyncIOMotorCollection, AsyncIOMotorDatabase
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection, AsyncIOMotorDatabase
 from redis.asyncio import Redis
 from app.core.config import get_settings
 import logging
@@ -44,8 +44,8 @@ def get_db() -> AsyncIOMotorDatabase:
 
 def get_redis() -> Redis:
     if _redis_client is None:
-        raise RuntimeError("MongoDB not connected")
-    return _mongo_client[settings.MONGODB_DB]
+        raise RuntimeError("Redis not connected")
+    return _redis_client
 
 async def _ensure_indexes()-> None:
     db = get_db()

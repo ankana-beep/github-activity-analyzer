@@ -23,7 +23,7 @@ class CandidateRepository:
     
     async def update(self, candidate_id: str, patch: dict) -> None:
         patch["updated_at"] = datetime.utcnow()
-        await self._col.update_one({"id": candidate_id}, {"set": patch})
+        await self._col.update_one({"id": candidate_id}, {"$set": patch})
         
     async def list_recent(self, limit: int = 20) -> List[Candidate]:
         cursor = self._col.find().sort("created_at", -1).limit(limit)

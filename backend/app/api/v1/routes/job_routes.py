@@ -34,7 +34,7 @@ async def list_jobs(job_repo: JobRepository = Depends(get_job_repo)):
     jobs = await job_repo.list_all()
     return jobs
 
-@router.get("/{job_id}", reponse_model=JobResponse)
+@router.get("/{job_id}", response_model=JobResponse)
 async def get_job(job_id: str, job_repo: JobRepository = Depends(get_job_repo)):
     job = await job_repo.find_by_id(job_id)
     if not job:

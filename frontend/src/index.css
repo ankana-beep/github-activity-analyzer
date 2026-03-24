@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 3px; }
+
+* {
+  transition-property: background-color, border-color, opacity;
+  transition-duration: 150ms;
+}

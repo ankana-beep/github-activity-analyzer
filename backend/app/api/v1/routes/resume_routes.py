@@ -56,7 +56,7 @@ async def upload_resume(
     return ResumeUploadResponse(
         candidate_id=candidate.id,
         status="processing",
-        message="Resume received. Poll GET /resume/{id}/report forresults"
+        message="Resume received. Poll GET /resume/{id}/report for results"
     )
     
 @router.get("/{candidate_id}/report", response_model=ReportResponse)

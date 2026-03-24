@@ -89,7 +89,7 @@ Resume:
                 ],
                 temperature=0.2
             )
-            raw = response.choices[0].messages.content.strip()
+            raw = response.choices[0].message.content.strip()
             if raw.startswith("```"):
                 raw = raw.split("```")[1]
                 if raw.startswith("json"):
