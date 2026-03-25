@@ -10,9 +10,9 @@ class ParsedResumeSchema(BaseModel):
     github_url: Optional[str]
     github_username: Optional[str]
     linkedin: Optional[str]
-    skills: Optional[str]
+    skills: List[str] = None
     experience: List[ExperienceSchema]
     education: List[EducationSchema]
-    sumary: Optional[str]
+    summary: Optional[str]
     years_of_experience: Optional[float]
     

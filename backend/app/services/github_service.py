@@ -72,7 +72,7 @@ class GithubService:
             total_stars=sum(r.stargazers_count for r in repos),
             total_forks=sum(r.forks_count for r in repos),
             commit_activity=commits,
-            last_active=repos[0].updated_at[:10] if repos else None,
+            last_active=repos[0].updated_at.isoformat()[:10] if repos else None,
         )
         await self._repo.cache(
             username, activity.dict(), self._settings.CACHE_TTL_SECONDS

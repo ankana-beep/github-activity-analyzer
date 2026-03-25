@@ -9,7 +9,7 @@ class ReportRepository:
         self._col = db[self.COLLECTION]
         
     async def create(self, report: Report) -> str:
-        await self.col.insert_one(report.dict())
+        await self._col.insert_one(report.dict())
         return report.id
     
     async def find_by_candidate(self, candidate_id: str) -> Optional[Report]:
