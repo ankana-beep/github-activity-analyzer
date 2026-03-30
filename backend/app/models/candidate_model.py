@@ -31,14 +31,15 @@ class ParsedResume(BaseModel):
     
     
 class Candidate(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))  
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     raw_filename: str
     parsed_resume: ParsedResume = Field(default_factory=ParsedResume)
     github_data: Optional[dict] = None
     developer_score: Optional[float] = None
     score_grade: Optional[str] = None
     ai_insight: Optional[str] = None
-    compatibility_scores: Optional[dict] = None    
+    compatibility_scores: Optional[dict] = None  # {job_id: CompatibilityResult}
+    warnings: List[str] = []                      # non-fatal notices (e.g. no GitHub URL)
     status: str = "pending"
     error_message: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)

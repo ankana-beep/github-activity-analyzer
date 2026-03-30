@@ -93,6 +93,7 @@ async def get_report(
         score_grade=candidate.score_grade,
         ai_insight=candidate.ai_insight,
         compatibility_scores=candidate.compatibility_scores,
+        warnings=candidate.warnings or [],
         error_message=candidate.error_message,
         created_at=candidate.created_at.isoformat(),
     )

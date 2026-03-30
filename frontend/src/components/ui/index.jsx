@@ -50,6 +50,130 @@ export function ErrorBanner({ message, onDismiss }) {
   )
 }
 
+// ── Toast ─────────────────────────────────────────────────────────────────────
+// Floating notification that auto-dismisses after `duration` ms.
+// variant: 'warning' | 'info' | 'success' | 'error'
+import { useState, useEffect } from 'react'
+
+const TOAST_STYLES = {
+  warning: {
+    wrapper: 'bg-amber-50 border-amber-200 text-amber-800',
+    icon:    'bg-amber-100 text-amber-600',
+    bar:     'bg-amber-400',
+    symbol:  '⚠',
+  },
+  info: {
+    wrapper: 'bg-blue-50 border-blue-200 text-blue-800',
+    icon:    'bg-blue-100 text-blue-600',
+    bar:     'bg-blue-400',
+    symbol:  'i',
+  },
+  success: {
+    wrapper: 'bg-green-50 border-green-200 text-green-800',
+    icon:    'bg-green-100 text-green-600',
+    bar:     'bg-green-400',
+    symbol:  '✓',
+  },
+  error: {
+    wrapper: 'bg-red-50 border-red-200 text-red-800',
+    icon:    'bg-red-100 text-red-600',
+    bar:     'bg-red-400',
+    symbol:  '✕',
+  },
+}
+
+export function Toast({ message, variant = 'warning', duration = 6000, onDismiss }) {
+  const [visible, setVisible]   = useState(true)
+  const [progress, setProgress] = useState(100)
+  const styles = TOAST_STYLES[variant] || TOAST_STYLES.warning
+
+  useEffect(() => {
+    if (!message) return
+
+    // Shrink progress bar over `duration` ms
+    const step     = 100 / (duration / 50)
+    const interval = setInterval(() => {
+      setProgress(p => {
+        if (p <= 0) { clearInterval(interval); return 0 }
+        return p - step
+      })
+    }, 50)
+
+    // Auto-hide after duration
+    const timer = setTimeout(() => {
+      setVisible(false)
+      onDismiss?.()
+    }, duration)
+
+    return () => { clearInterval(interval); clearTimeout(timer) }
+  }, [message, duration])
+
+  if (!visible || !message) return null
+
+  return (
+    <div
+      role="alert"
+      className={`
+        fixed bottom-6 right-6 z-50 w-80 rounded-2xl border shadow-lg overflow-hidden
+        transition-all duration-300
+        ${styles.wrapper}
+      `}
+      style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
+    >
+      {/* Content */}
+      <div className="flex items-start gap-3 p-4">
+        {/* Icon */}
+        <div className={`
+          w-7 h-7 rounded-full flex items-center justify-center
+          text-xs font-mono font-medium shrink-0 mt-0.5
+          ${styles.icon}
+        `}>
+          {styles.symbol}
+        </div>
+
+        {/* Message */}
+        <p className="flex-1 text-xs font-mono leading-relaxed">{message}</p>
+
+        {/* Close button */}
+        <button
+          onClick={() => { setVisible(false); onDismiss?.() }}
+          className="shrink-0 opacity-50 hover:opacity-100 transition-opacity text-sm leading-none mt-0.5"
+          aria-label="Dismiss"
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* Auto-dismiss progress bar */}
+      <div className="h-0.5 bg-black/10">
+        <div
+          className={`h-full transition-none ${styles.bar}`}
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+    </div>
+  )
+}
+
+// ── ToastContainer ────────────────────────────────────────────────────────────
+// Renders multiple toasts stacked above each other.
+// Pass an array of { id, message, variant } objects.
+export function ToastContainer({ toasts, onDismiss }) {
+  return (
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 items-end">
+      {toasts.map((t, i) => (
+        <Toast
+          key={t.id ?? i}
+          message={t.message}
+          variant={t.variant || 'warning'}
+          duration={t.duration || 6000}
+          onDismiss={() => onDismiss?.(t.id ?? i)}
+        />
+      ))}
+    </div>
+  )
+}
+
 // ── Spinner ───────────────────────────────────────────────────────────────────
 export function Spinner({ size = 'sm' }) {
   const cls = size === 'lg' ? 'w-8 h-8 border-[3px]' : 'w-4 h-4 border-2'

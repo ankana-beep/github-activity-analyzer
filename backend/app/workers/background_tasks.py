@@ -9,6 +9,7 @@ from app.services.ai_summary_service import AISummaryService
 
 logger = logging.getLogger(__name__)
 
+
 async def process_candidate_pipeline(
     candidate_id: str,
     file_bytes: bytes,
@@ -17,57 +18,107 @@ async def process_candidate_pipeline(
     resume_parser: ResumeParserService,
     github_service: GithubService,
     activity_analyzer: ActivityAnalyzerService,
-    ai_summary: AISummaryService
-    ) ->None:
+    ai_summary: AISummaryService,
+) -> None:
     """
     Full analysis pipeline:
       1. Parse resume (AI extraction)
-      2. Resolve GitHub username
+      2. Resolve GitHub username  — gracefully skipped if not found
       3. Fetch GitHub activity (Redis-cached)
       4. Compute developer score
       5. Generate AI insight
       6. Persist to MongoDB
+
+    If no GitHub URL is found in the resume the pipeline completes
+    successfully with github_data=None and a warning in the warnings list.
+    The candidate dashboard still shows all parsed resume data.
     """
-    logger.info(f"[Pipeline] starting for {candidate_id}")
+    logger.info(f"[Pipeline] Starting for {candidate_id}")
+    warnings: list[str] = []
+
     try:
-      # Starge 1: Parse resume
-      await candidate_repo.update(candidate_id, {"status": "parsing_resume"})
-      parsed = await resume_parser.parse(file_bytes, filename)
-      await candidate_repo.update(candidate_id, {
-        "parsed_resume": parsed.dict(),
-        "status": "fetching_github",
-      })
-      logger.info(f"[Pipeline] Resume parsed . github={parsed.github_username}")
-      if not parsed.github_username:
-        raise ValueError("No Github username found in resume.")
-      
-      # Stage 2: Github activity
-      activity = await github_service.get_activity(parsed.github_username)
-      logger.info(f"[Pipeline] Github fetched for {parsed.github_username}")
-      
-      # Stage 3: Developer score 
-      await candidate_repo.update(candidate_id, {"status": "analyzing"})
-      score = activity_analyzer.compute_score(activity)
-      grade = activity_analyzer.grade(score)
-      
-      # Stage 4: AI insight
-      await candidate_repo.update(candidate_id, {"status":"generating_insight"})
-      insight = await ai_summary.generate(parsed, activity, score, grade)
-      
-      # Stage 5: Persist
-      await candidate_repo.update(candidate_id, {
-        "github_data": activity.dict(),
-        "developer_score": score,
-        "score_grade": grade,
-        "ai_insight": insight,
-        "status": "complete",
-        "updated_at": datetime.utcnow(),
-      })
-      logger.info(f"[Pipeline] Complete . candidate={candidate_id} . score={score}")
-      
-    except ValueError as e:
-      logger.warning(f"[Pipeline] Validation error . {candidate_id}: {e}")
-      await candidate_repo.update(candidate_id, {
-        "status": "error",
-        "error_message": "An unexpected error occured during processing.",
-      })   
+        # ── Stage 1: Parse resume ─────────────────────────────────────────────
+        await candidate_repo.update(candidate_id, {"status": "parsing_resume"})
+        parsed = await resume_parser.parse(file_bytes, filename)
+        await candidate_repo.update(candidate_id, {
+            "parsed_resume": parsed.dict(),
+            "status": "fetching_github",
+        })
+        logger.info(f"[Pipeline] Resume parsed · github={parsed.github_username}")
+
+        # ── Stage 2: GitHub activity (optional) ───────────────────────────────
+        activity = None
+        score    = None
+        grade    = None
+        insight  = None
+
+        if not parsed.github_username:
+            # No GitHub URL in resume — record a warning and continue
+            warnings.append(
+                "No GitHub profile URL was found in this resume. "
+                "GitHub activity, developer score, and AI insight are unavailable."
+            )
+            logger.info(f"[Pipeline] No GitHub username · skipping GitHub stages")
+
+            # Mark the pipeline as complete immediately with resume-only data
+            await candidate_repo.update(candidate_id, {
+                "github_data": None,
+                "developer_score": None,
+                "score_grade": None,
+                "ai_insight": None,
+                "warnings": warnings,
+                "status": "complete",
+                "updated_at": datetime.utcnow(),
+            })
+            logger.info(f"[Pipeline] Complete (resume only) · candidate={candidate_id}")
+            return
+
+        # ── Stage 3: Fetch GitHub data ────────────────────────────────────────
+        try:
+            activity = await github_service.get_activity(parsed.github_username)
+            logger.info(f"[Pipeline] GitHub fetched for {parsed.github_username}")
+        except Exception as gh_err:
+            # GitHub fetch failed (rate limit, user not found, network error)
+            # Degrade gracefully: complete with resume data only + warning
+            warnings.append(
+                f"GitHub data could not be fetched for @{parsed.github_username}: {gh_err}"
+            )
+            logger.warning(f"[Pipeline] GitHub fetch failed · {gh_err}")
+            await candidate_repo.update(candidate_id, {
+                "github_data": None,
+                "developer_score": None,
+                "score_grade": None,
+                "ai_insight": None,
+                "warnings": warnings,
+                "status": "complete",
+                "updated_at": datetime.utcnow(),
+            })
+            return
+
+        # ── Stage 4: Developer score ──────────────────────────────────────────
+        await candidate_repo.update(candidate_id, {"status": "analyzing"})
+        score = activity_analyzer.compute_score(activity)
+        grade = activity_analyzer.grade(score)
+
+        # ── Stage 5: AI insight ───────────────────────────────────────────────
+        await candidate_repo.update(candidate_id, {"status": "generating_insight"})
+        insight = await ai_summary.generate(parsed, activity, score, grade)
+
+        # ── Stage 6: Persist final report ─────────────────────────────────────
+        await candidate_repo.update(candidate_id, {
+            "github_data": activity.dict(),
+            "developer_score": score,
+            "score_grade": grade,
+            "ai_insight": insight,
+            "warnings": warnings,
+            "status": "complete",
+            "updated_at": datetime.utcnow(),
+        })
+        logger.info(f"[Pipeline] Complete · candidate={candidate_id} · score={score}")
+
+    except Exception as e:
+        logger.error(f"[Pipeline] Unexpected error · {candidate_id}: {e}", exc_info=True)
+        await candidate_repo.update(candidate_id, {
+            "status": "error",
+            "error_message": "An unexpected error occurred during processing.",
+        })

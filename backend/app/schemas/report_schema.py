@@ -16,5 +16,6 @@ class ReportResponse(BaseModel):
     score_grade: Optional[str]
     ai_insight: Optional[str]
     compatibility_scores: Optional[Dict[str, CompatibilitySchema]]
+    warnings: List[str] = []
     error_message: Optional[str]
     created_at: datetime
