@@ -72,5 +72,6 @@ async def compute_compatibility(
     
     result = await compatibility_service.compute(candidate.parsed_resume, activity, job)
     scores = candidate.compatibility_scores or {}
+    scores[payload.job_id] = result.dict()
     await candidate_repo.update(payload.candidate_id, {"compatibility_scores": scores})
-    return CompatibilitySchema(*result.dict())
+    return CompatibilitySchema(**result.dict())

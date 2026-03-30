@@ -26,7 +26,7 @@ export default function DashboardPage({ data, onReset, onNavigate }) {
         <Toast
           message={githubWarning}
           variant="warning"
-          duration={8000}
+          duration={8080}
           onDismiss={() => setToastDismissed(true)}
         />
       )}
