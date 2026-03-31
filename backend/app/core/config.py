@@ -1,6 +1,9 @@
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 from typing import List
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Settings(BaseSettings):
     
@@ -9,18 +12,18 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     ALLOWED_ORIGINS: List[str] = ["http://localhost:5173", "http://localhost:3000"]
     
-    MONGODB_URL: str = "mongodb://localhost:27017"
-    MONGODB_DB: str = "recruiter_intelligence_platform"
+    MONGODB_URL: str = os.getenv("MONGODB_URL")
+    MONGODB_DB: str = os.getenv("MONGODB_DB")
     
-    REDIS_URL: str = "redis//localhost:6379"
-    CACHE_TTL_SECONDS: int = 86400
+    REDIS_URL: str = os.getenv("REDIS_URL")
+    CACHE_TTL_SECONDS: int = os.getenv("CACHE_TTL_SECONDS")
     
-    GITHUB_TOKEN: str =""
-    OPENAI_API_KEY: str = ""
+    GITHUB_TOKEN: str = os.getenv("GITHUB_TOKEN")
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
     
-    MAX_FILE_SIZE_MB: int = 10
+    MAX_FILE_SIZE_MB: int = os.getenv("MAX_FILE_SIZE_MB")
     
-    REPORT_OUTPUT_DIR:str = "/tmp/reports"
+    REPORT_OUTPUT_DIR:str = os.getenv("REPORT_OUTPUT_DIR")
     
     class Config:
         env_file = ".env"
