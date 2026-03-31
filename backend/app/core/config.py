@@ -14,11 +14,11 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     ALLOWED_ORIGINS: List[str] = ["http://localhost:5173", "http://localhost:3000"]
     
-    MONGODB_URL: str = os.getenv("MONGODB_URL")
-    MONGODB_DB: str = os.getenv("MONGODB_DB")
-    
     REDIS_URL: str = os.getenv("REDIS_URL")
     CACHE_TTL_SECONDS: int = os.getenv("CACHE_TTL_SECONDS")
+    
+    MONGODB_URL: str = os.getenv("MONGODB_URL")
+    MONGODB_DB: str = os.getenv("MONGODB_DB")
     
     GITHUB_TOKEN: str = os.getenv("GITHUB_TOKEN")
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
