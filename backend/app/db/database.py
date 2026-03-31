@@ -12,7 +12,7 @@ _redis_client: Redis | None = None
 
 async def connect_mongo() -> None:
     global _mongo_client
-    _mongo_client = AsyncIOMotorClient(settings.MONGODB_URL)
+    _mongo_client = AsyncIOMotorClient(settings.MONGODB_URI)
     logger.info("MongoDB connected")
     await _ensure_indexes()
 
