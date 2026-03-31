@@ -26,6 +26,13 @@ class Settings(BaseSettings):
     MAX_FILE_SIZE_MB: int = os.getenv("MAX_FILE_SIZE_MB")
     
     REPORT_OUTPUT_DIR:str = os.getenv("REPORT_OUTPUT_DIR")
+    print("REPORT_OUTPUT_DIR", REPORT_OUTPUT_DIR)
+    print("MONGODB_DB", MONGODB_DB)
+    print("MONGODB_URL", MONGODB_URL)
+    print("REDIS_URL", REDIS_URL)
+    print("GITHUB_TOKEN", GITHUB_TOKEN)
+    print("OPENAI_API_KEY", OPENAI_API_KEY)
+    print("MAX_FILE_SIZE_MB", MAX_FILE_SIZE_MB)
     
     class Config:
         env_file = ".env"
