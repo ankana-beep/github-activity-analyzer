@@ -35,12 +35,15 @@ def create_app() -> FastAPI:
     
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.ALLOWED_ORIGINS,
+         allow_origins=[
+        "https://github-activity-analyzer.vercel.app",
+        "http://localhost:5174",  # for local testing
+    ],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
+    logger.info(f"Allowed CORS origins: {settings.ALLOWED_ORIGINS}")
     prefix = "/api/v1"
     app.include_router(resume_routes.router, prefix=prefix)
     app.include_router(github_routes.router, prefix=prefix)
