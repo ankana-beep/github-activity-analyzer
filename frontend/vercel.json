@@ -1,0 +1,5 @@
+{
+  "env": {
+    "VITE_API_BASE_URL": "https://github-activity-analyzer-0b0w.onrender.com/api/v1"
+  }
+}
