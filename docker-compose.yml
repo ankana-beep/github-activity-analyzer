@@ -9,7 +9,6 @@ services:
       - ./backend/.env
     depends_on:
       - mongo
-      - redis
     volumes:
       - report_files:/tmp/reports
     networks:
@@ -36,21 +35,13 @@ services:
       - app-network
     restart: unless-stopped
 
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "${REDIS_PORT:-6380}:6379"
-    command: redis-server --appendonly yes
-    volumes:
-      - redis_data:/data
-    networks:
-      - app-network
-    restart: unless-stopped
-
 volumes:
   mongo_data:
-  redis_data:
   report_files:
+
+networks:
+  app-network:
+    driver: bridge
 
 networks:
   app-network:

@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
 from app.core.config import get_settings
-from app.db.database import connect_mongo, disconnect_mongo, connect_redis, disconnect_redis
+from app.db.database import connect_mongo, disconnect_mongo
 from app.api.v1.routes import resume_routes, github_routes, job_routes, report_routes
 
 logging.basicConfig(
@@ -16,10 +16,8 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     logger.info("Starting up Recruiter Intelligence Platform v2")
     await connect_mongo()
-    await connect_redis()
     yield
     await disconnect_mongo()
-    await disconnect_redis()
     logger.info("Shutdown complete")
     
 

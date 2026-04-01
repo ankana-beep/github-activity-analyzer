@@ -24,7 +24,7 @@ async def process_candidate_pipeline(
     Full analysis pipeline:
       1. Parse resume (AI extraction)
       2. Resolve GitHub username  — gracefully skipped if not found
-      3. Fetch GitHub activity (Redis-cached)
+      3. Fetch GitHub activity (cached in Mongo)
       4. Compute developer score
       5. Generate AI insight
       6. Persist to MongoDB
@@ -58,7 +58,7 @@ async def process_candidate_pipeline(
                 "No GitHub profile URL was found in this resume. "
                 "GitHub activity, developer score, and AI insight are unavailable."
             )
-            logger.info(f"[Pipeline] No GitHub username · skipping GitHub stages")
+            logger.info("[Pipeline] No GitHub username · skipping GitHub stages")
 
             # Mark the pipeline as complete immediately with resume-only data
             await candidate_repo.update(candidate_id, {

@@ -38,5 +38,5 @@ async def invalidate_cache(
     username: str,
     github_service: GithubService = Depends(get_github_service),
 ):
-    """Invalidate Redis + Mongo cache for a Github username."""
+    """Invalidate Mongo cache for a Github username."""
     await github_service._repo.invalidate(username)

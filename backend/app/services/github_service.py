@@ -41,7 +41,7 @@ class GithubNotFoundError(Exception):
 class GithubService:
     """
     Fetches Github profile, repos, and commit activity.
-    All responses cached in Redis for CACHE_TTL_SECONDS.
+    All responses cached in Mongo for CACHE_TTL_SECONDS.
     Handles 403/429 rate-limit responses gracefully.
     """
     

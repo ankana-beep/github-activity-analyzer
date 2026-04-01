@@ -1,9 +1,8 @@
 from fastapi import Depends
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from redis.asyncio import Redis
 
 from app.core.config import get_settings, Settings
-from app.db.database import get_db, get_redis
+from app.db.database import get_db
 from app.repositories.candidate_repository import CandidateRepository
 from app.repositories.github_repository import GithubRepository
 from app.repositories.job_repository import JobRepository
@@ -21,11 +20,8 @@ from app.services.pdf_report_service import PdfReportService
 def get_candidate_repo(db: AsyncIOMotorDatabase = Depends(get_db)) -> CandidateRepository:
     return CandidateRepository(db)
 
-def get_github_repo(
-    db: AsyncIOMotorDatabase = Depends(get_db),
-    redis: Redis = Depends(get_redis),
-) -> GithubRepository:
-    return GithubRepository(db, redis)
+def get_github_repo(db: AsyncIOMotorDatabase = Depends(get_db)) -> GithubRepository:
+    return GithubRepository(db)
 
 def get_job_repo(db: AsyncIOMotorDatabase = Depends(get_db)) -> JobRepository:
     return JobRepository(db)
