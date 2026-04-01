@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api': { target: 'http://localhost:8080', changeOrigin: true },
+      '/api': { target: 'https://github-activity-analyzer-0b0w.onrender.com', changeOrigin: true },
     },
   },
 })
