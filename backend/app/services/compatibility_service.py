@@ -155,7 +155,7 @@ class CompatibilityService:
         experience_match: float,
     ) -> str:
         prompt = f"""Write a 2-sentence recruiter assessment of fit between this candidate and job.
-Be speific about strengths and gaps. No bullet points.float
+Be specific about strengths and gaps. No bullet points.float
 
 Job: {job.title} at {job.company or "company"}
 Required skills: {", ".join(job.required_skills[:8])}
@@ -170,7 +170,7 @@ Missing skills: {", ".join(skill_data["missing"][:6]) or "none"}
 Compatibility score: {score}/100"""
 
         try:
-            response =- await self._client.chat.completion.create(
+            response = await self._client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.2

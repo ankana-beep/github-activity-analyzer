@@ -13,7 +13,7 @@ class AISummaryService:
     """
     
     def __init__(self, settings: Settings):
-        self.__client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+        self._client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
         
     async def generate(
         self, 
