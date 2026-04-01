@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const api = axios.create({ baseURL: '/api/v1', timeout: 30000 })
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1'
+const api = axios.create({ baseURL: API_BASE_URL, timeout: 30000 })
 
 // ── Resume ────────────────────────────────────────────────────────────────────
 export const uploadResume = (file, onProgress) => {
@@ -37,7 +38,7 @@ export const listCandidates = (limit = 20) =>
   api.get('/reports/', { params: { limit } }).then(r => r.data)
 
 export const getDownloadUrl = (candidateId, jobId = null) => {
-  const base = `/api/v1/reports/${candidateId}/download`
+  const base = `${API_BASE_URL}/reports/${candidateId}/download`
   return jobId ? `${base}?job_id=${jobId}` : base
 }
 
