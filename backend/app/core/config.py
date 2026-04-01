@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "Recruiter Intelligence Platform"
     APP_VERSION: str = "2.0.0"
     DEBUG: bool = False
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:5174", "http://localhost:3000", "https://github-activity-analyzer.vercel.app"]
+    ALLOWED_ORIGINS: List[str] = ["http://localhost:5174", "http://localhost:3000", "https://github-activity-analyzer.vercel.app", "https://github-activity-analyzer.vercel.app/"]
     
     REDIS_URL: str = os.getenv("REDIS_URL")
     CACHE_TTL_SECONDS: int = os.getenv("CACHE_TTL_SECONDS")
